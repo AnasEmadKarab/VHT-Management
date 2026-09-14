@@ -5,3 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 TORN_API_KEY = "ZdlDSn6CNQZos95a"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vth-db"
+database_id = "23546669-dde1-4de5-8bfc-781239e60708"
