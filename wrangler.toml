@@ -2,8 +2,10 @@ name = "vth-management"
 compatibility_date = "2024-03-20"
 pages_build_output_dir = ".vercel/output/static"
 
+# هاد السطرين بيفرضوا تفعيل الـ nodejs_compat مباشرة من الكود
+compatibility_flags = ["nodejs_compat"]
+
 [[d1_databases]]
-binding = "DB" # هاد الاسم اللي هننادي فيه الداتابيز بالكود
+binding = "DB"
 database_name = "vth-db"
-database_id = "23546669-dde1-4de5-8bfc-781239e60708" # هاد الآي دي هنغيره لاحقاً لما نرفع الشغل أونلاين
-migrations_dir = "drizzle"
+database_id = "23546669-ddc1-4dc5-8bfc-781239c60708"
