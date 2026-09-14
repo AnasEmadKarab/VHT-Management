@@ -1,29 +1,68 @@
+// import { NextResponse } from "next/server";
+// import { getRequestContext } from "@cloudflare/next-on-pages";
+
+// export const runtime = "edge";
+
+// export async function GET() {
+//   try {
+//     const ctx = getRequestContext();
+
+//     if (!ctx) {
+//       return NextResponse.json({ success: false, error: "1. السيرفر مو قادر يوصل لبيئة كلاودفلير." });
+//     }
+
+//     if (!ctx.env) {
+//       return NextResponse.json({ success: false, error: "2. المتغيرات (env) مفقودة بالكامل من السيرفر." });
+//     }
+
+//     if (!ctx.env.DB) {
+//       return NextResponse.json({
+//         success: false,
+//         error: "🔥 الداتابيز غير مربوطة! السيرفر مو شايف (DB). لازم تربطها من إعدادات Cloudflare وتعمل Re-deploy."
+//       });
+//     }
+
+//     return NextResponse.json({ success: true, message: "✅ الداتابيز مربوطة بنجاح وكل شي سليم 100%!" });
+//   } catch (e: any) {
+//     return NextResponse.json({ success: false, error: "Crash: " + e.message });
+//   }
+// }
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/d1";
-import { events } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = "edge";
+
 export async function GET() {
   try {
-    const db = drizzle(getRequestContext().env.DB);
+    const ctx = getRequestContext();
 
-    // بنجيب الحدث اللي حالته Active
-    const activeEvents = await db
-      .select()
-      .from(events)
-      .where(eq(events.status, "Active"));
-
-    if (activeEvents.length > 0) {
-      return NextResponse.json({ success: true, event: activeEvents[0] });
-    } else {
-      return NextResponse.json({ success: true, event: null });
+    if (!ctx) {
+      return NextResponse.json({
+        success: false,
+        error: "1. السيرفر مو قادر يوصل لبيئة كلاودفلير.",
+      });
     }
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch active event" },
-      { status: 500 },
-    );
+
+    if (!ctx.env) {
+      return NextResponse.json({
+        success: false,
+        error: "2. المتغيرات (env) مفقودة بالكامل من السيرفر.",
+      });
+    }
+
+    if (!ctx.env.DB) {
+      return NextResponse.json({
+        success: false,
+        error:
+          "🔥 الداتابيز غير مربوطة! السيرفر مو شايف (DB). لازم تربطها من إعدادات Cloudflare وتعمل Re-deploy.",
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "✅ الداتابيز مربوطة بنجاح وكل شي سليم 100%!",
+    });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: "Crash: " + e.message });
   }
 }
