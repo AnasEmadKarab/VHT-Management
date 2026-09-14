@@ -20,6 +20,17 @@ export async function POST(req: Request) {
     const tornData = await tornRes.json();
     const membersList = tornData.members;
 
+    // الحماية هنا: لو مفتاح تورن غلط أو ما جاب أعضاء، نوقف العملية بكرامة
+    if (!membersList || !Array.isArray(membersList)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "فشل جلب الأعضاء من تورن، تأكد من الـ API Key",
+        },
+        { status: 400 },
+      );
+    }
+
     const newEvent = await db
       .insert(events)
       .values({ name, type, status: "Active" })
@@ -27,7 +38,6 @@ export async function POST(req: Request) {
 
     const eventId = newEvent[0].id;
 
-    // الحل هنا: تحويل البيانات لمجموعة من الاستعلامات المنفصلة
     const insertStatements = membersList.map((m: any) =>
       db.insert(eventMembers).values({
         eventId,
@@ -36,7 +46,6 @@ export async function POST(req: Request) {
       }),
     );
 
-    // إرسالهم باستخدام تقنية الـ Batch المخصصة لـ Cloudflare
     await db.batch(insertStatements);
 
     return NextResponse.json({ success: true, event: newEvent[0] });

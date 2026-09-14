@@ -1,17 +1,7 @@
 name = "vth-management"
 compatibility_date = "2024-03-20"
 pages_build_output_dir = ".vercel/output/static"
-
-# لحل مشكلة الصفحة البيضاء بشكل نهائي
 compatibility_flags = ["nodejs_compat"]
 
-# هون بنثبت المتغيرات عشان ما عاد تختفي أبداً
 [vars]
 TORN_API_KEY = "ZdlDSn6CNQZos95a"
-
-# ربط الداتابيز بشكل يكسر راس السيرفر
-[[d1_databases]]
-binding = "DB"
-database_name = "vth-db"
-database_id = "23546669-dde1-4de5-8bfc-781239e60708"
-preview_database_id = "23546669-dde1-4de5-8bfc-781239e60708"
