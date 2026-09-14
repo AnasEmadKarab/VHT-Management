@@ -5,5 +5,5 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB" # هاد الاسم اللي هننادي فيه الداتابيز بالكود
 database_name = "vth-db"
-database_id = "local-dev-id" # هاد الآي دي هنغيره لاحقاً لما نرفع الشغل أونلاين
+database_id = "23546669-dde1-4de5-8bfc-781239e60708" # هاد الآي دي هنغيره لاحقاً لما نرفع الشغل أونلاين
 migrations_dir = "drizzle"
