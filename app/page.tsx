@@ -9,7 +9,6 @@ export default function Home() {
   const [history, setHistory] = useState<any[]>([]);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
 
-  // State للتحكم بالـ Popup تبع الحذف
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     eventId: null as number | null,
@@ -114,7 +113,6 @@ export default function Home() {
     }
   };
 
-  // دالة تأكيد الحذف (تشتغل لما تكبس Yes جوا البوب أب)
   const confirmDeleteEvent = async () => {
     if (!deleteModal.eventId) return;
 
@@ -131,7 +129,7 @@ export default function Home() {
         if (activeEvent?.id === deleteModal.eventId) {
           setActiveEvent(null);
         }
-        setDeleteModal({ isOpen: false, eventId: null, eventName: "" }); // تسكير البوب أب
+        setDeleteModal({ isOpen: false, eventId: null, eventName: "" });
       }
     } catch (error) {
       console.error("Delete Error:", error);
@@ -157,7 +155,8 @@ export default function Home() {
             <span className="w-2 h-6 bg-[#D4AF37] rounded-full inline-block"></span>
             Create New Event
           </h2>
-          <div className="flex flex-col md:flex-row gap-4 items-end">
+          {/* Modified: md:items-end instead of items-end for mobile wrapping */}
+          <div className="flex flex-col md:flex-row gap-4 md:items-end">
             <div className="flex-1 w-full">
               <label className="block text-sm text-gray-400 mb-2">
                 Event Name
@@ -193,20 +192,20 @@ export default function Home() {
           </div>
         </section>
       ) : (
-        <section className="bg-gradient-to-br from-[#1C1C1C] to-[#0D0D0D] border border-emerald-500/30 rounded-xl p-6 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden">
+        <section className="bg-gradient-to-br from-[#1C1C1C] to-[#0D0D0D] border border-emerald-500/30 rounded-xl p-4 md:p-6 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 text-center md:text-left">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
                 <span className="animate-pulse w-3 h-3 bg-emerald-500 rounded-full"></span>
                 <span className="text-emerald-500 font-semibold tracking-wider text-sm uppercase">
                   Active {activeEvent.type}
                 </span>
               </div>
-              <h2 className="text-3xl font-bold text-white mb-1">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">
                 {activeEvent.name}
               </h2>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-xs md:text-sm">
                 Tracking Xanax usage and attacks in background...
               </p>
             </div>
@@ -222,7 +221,7 @@ export default function Home() {
       )}
 
       <section>
-        <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-3">
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-3">
           Events History
         </h2>
         <div className="space-y-4">
@@ -235,19 +234,19 @@ export default function Home() {
                 className="bg-[#1C1C1C] border border-gray-800 rounded-xl overflow-hidden transition-all"
               >
                 <div
-                  className="p-5 flex justify-between items-center cursor-pointer hover:bg-[#252525] transition-colors group"
+                  className="p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:bg-[#252525] transition-colors group"
                   onClick={() =>
                     setOpenAccordion(openAccordion === ev.id ? null : ev.id)
                   }
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
                     <div
-                      className={`px-3 py-1 rounded text-xs font-bold uppercase ${ev.type === "War" ? "bg-orange-500/20 text-orange-400" : "bg-blue-500/20 text-blue-400"}`}
+                      className={`px-3 py-1 rounded text-xs font-bold uppercase shrink-0 ${ev.type === "War" ? "bg-orange-500/20 text-orange-400" : "bg-blue-500/20 text-blue-400"}`}
                     >
                       {ev.type}
                     </div>
-                    <div className="flex flex-col">
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <div className="flex flex-col flex-1">
+                      <h3 className="text-base md:text-lg font-bold text-white flex flex-wrap items-center gap-2">
                         {ev.name}
                         {ev.status === "Active" && (
                           <span
@@ -259,12 +258,12 @@ export default function Home() {
                         )}
                       </h3>
                       {ev.status === "Ended" && (
-                        <div className="flex items-center gap-3 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-1">
                           <span className="text-xs font-semibold text-emerald-400">
                             +{ev.respectGained?.toLocaleString()} Respect
                           </span>
                           {ev.type === "War" && formatItems(ev.itemsGained) && (
-                            <span className="text-xs text-gray-400 border-l border-gray-600 pl-3">
+                            <span className="text-xs text-gray-400 border-l border-gray-600 pl-2 md:pl-3 break-words">
                               {formatItems(ev.itemsGained)}
                             </span>
                           )}
@@ -273,72 +272,72 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto border-t md:border-t-0 border-gray-800 pt-3 md:pt-0">
                     <span className="text-sm font-semibold text-[#D4AF37]">
                       {ev.status === "Active"
                         ? "View Live Stats"
                         : "View Report"}
                     </span>
-                    <svg
-                      className={`w-5 h-5 text-gray-400 transform transition-transform ${openAccordion === ev.id ? "rotate-180" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-
-                    {/* زر الحذف باللون الأحمر الصريح */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteModal({
-                          isOpen: true,
-                          eventId: ev.id,
-                          eventName: ev.name,
-                        });
-                      }}
-                      className="ml-2 text-white bg-red-600 hover:bg-red-700 p-2 rounded-lg transition-colors shadow-lg shadow-red-900/20 opacity-0 group-hover:opacity-100"
-                      title="Delete Event"
-                    >
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteModal({
+                            isOpen: true,
+                            eventId: ev.id,
+                            eventName: ev.name,
+                          });
+                        }}
+                        className="text-white bg-red-600 hover:bg-red-700 p-2 rounded-lg transition-colors shadow-lg shadow-red-900/20 md:opacity-0 group-hover:opacity-100 shrink-0"
+                        title="Delete Event"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                        className={`w-5 h-5 text-gray-400 transform transition-transform shrink-0 ${openAccordion === ev.id ? "rotate-180" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
                         <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
                         />
                       </svg>
-                    </button>
+                    </div>
                   </div>
                 </div>
 
                 {openAccordion === ev.id && (
-                  <div className="bg-[#0D0D0D] border-t border-gray-800 p-4">
+                  <div className="bg-[#0D0D0D] border-t border-gray-800 p-2 md:p-4">
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left border-collapse">
+                      <table className="w-full text-left border-collapse min-w-[500px]">
                         <thead>
-                          <tr className="text-gray-400 text-sm border-b border-gray-800">
-                            <th className="pb-3 px-4">Member Name</th>
-                            <th className="pb-3 px-4 text-center">
+                          <tr className="text-gray-400 text-xs md:text-sm border-b border-gray-800">
+                            <th className="pb-3 px-2 md:px-4">Member Name</th>
+                            <th className="pb-3 px-2 md:px-4 text-center">
                               Xanax Used
                             </th>
-                            <th className="pb-3 px-4 text-center">
+                            <th className="pb-3 px-2 md:px-4 text-center">
                               Expected Attacks
                             </th>
-                            <th className="pb-3 px-4 text-center">
+                            <th className="pb-3 px-2 md:px-4 text-center">
                               Total Attacks
                             </th>
-                            <th className="pb-3 px-4 text-center">
+                            <th className="pb-3 px-2 md:px-4 text-center">
                               Respect / Score
                             </th>
                           </tr>
@@ -357,23 +356,23 @@ export default function Home() {
                             return (
                               <tr
                                 key={m.id}
-                                className={`border-b border-gray-800/50 hover:bg-[#1A1A1A] transition-colors ${index % 2 === 0 ? "bg-[#0D0D0D]" : "bg-[#121212]"}`}
+                                className={`border-b border-gray-800/50 hover:bg-[#1A1A1A] transition-colors text-xs md:text-sm ${index % 2 === 0 ? "bg-[#0D0D0D]" : "bg-[#121212]"}`}
                               >
-                                <td className="py-3 px-4 font-semibold text-[#E0E0E0]">
+                                <td className="py-3 px-2 md:px-4 font-semibold text-[#E0E0E0] whitespace-nowrap">
                                   {m.name}
                                 </td>
-                                <td className="py-3 px-4 text-center text-[#D4AF37] font-bold">
+                                <td className="py-3 px-2 md:px-4 text-center text-[#D4AF37] font-bold">
                                   {m.xanax}
                                 </td>
-                                <td className="py-3 px-4 text-center text-gray-400 font-medium">
+                                <td className="py-3 px-2 md:px-4 text-center text-gray-400 font-medium">
                                   {expectedAttacks}
                                 </td>
                                 <td
-                                  className={`py-3 px-4 text-center font-bold ${attacksColor}`}
+                                  className={`py-3 px-2 md:px-4 text-center font-bold ${attacksColor}`}
                                 >
                                   {m.attacks}
                                 </td>
-                                <td className="py-3 px-4 text-center text-blue-400 font-bold">
+                                <td className="py-3 px-2 md:px-4 text-center text-blue-400 font-bold">
                                   {m.respect?.toFixed(2) || 0}
                                 </td>
                               </tr>
@@ -390,12 +389,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* بوب أب التأكيد (Custom Modal) */}
       {deleteModal.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <div className="bg-[#1C1C1C] border border-red-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl shadow-red-900/20 transform transition-all">
             <div className="flex items-center gap-4 mb-4">
-              <div className="bg-red-500/20 p-3 rounded-full text-red-500">
+              <div className="bg-red-500/20 p-3 rounded-full text-red-500 shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -413,7 +411,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-white">Delete Event</h3>
             </div>
-            <p className="text-gray-300 mb-8 text-sm">
+            <p className="text-gray-300 mb-8 text-sm leading-relaxed">
               Are you sure you want to delete{" "}
               <span className="text-[#D4AF37] font-bold">
                 "{deleteModal.eventName}"
@@ -424,7 +422,7 @@ export default function Home() {
                 event will be lost.
               </span>
             </p>
-            <div className="flex justify-end gap-3">
+            <div className="flex flex-col-reverse md:flex-row justify-end gap-3">
               <button
                 onClick={() =>
                   setDeleteModal({
@@ -433,13 +431,13 @@ export default function Home() {
                     eventName: "",
                   })
                 }
-                className="px-5 py-2.5 rounded-lg font-semibold text-gray-300 bg-[#2A2A2A] hover:bg-[#333333] transition-colors"
+                className="px-5 py-3 md:py-2.5 rounded-lg font-semibold text-gray-300 bg-[#2A2A2A] hover:bg-[#333333] transition-colors w-full md:w-auto text-center"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteEvent}
-                className="px-5 py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-900/50 transition-colors"
+                className="px-5 py-3 md:py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-900/50 transition-colors w-full md:w-auto text-center"
               >
                 Yes, Delete
               </button>
