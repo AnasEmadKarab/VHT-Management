@@ -30,7 +30,7 @@ export default function RootLayout({
                 width={60}
                 height={60}
                 style={{ width: "auto", height: "auto" }}
-                className="object-contain drop-shadow-md"
+                className="w-full max-w-md md:max-w-2xl mx-auto h-auto object-contain drop-shadow-2xl mb-8"
               />
               <h1 className="text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#FFF8DC]">
                 VTH VANGUARD
