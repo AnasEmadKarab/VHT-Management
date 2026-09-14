@@ -7,6 +7,7 @@ export const events = sqliteTable("events", {
   status: text("status").default("Active"),
   respectGained: real("respect_gained").default(0),
   itemsGained: text("items_gained"),
+  lastTimestamp: integer("lastTimestamp").default(0),
 });
 
 export const eventMembers = sqliteTable("event_members", {

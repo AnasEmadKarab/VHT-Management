@@ -1,0 +1,13 @@
+name: Background Xanax Tracker
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Sync API
+        run: curl -s https://vht-management.pages.dev/api/event/sync-xanax

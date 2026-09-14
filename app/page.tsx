@@ -51,19 +51,10 @@ export default function Home() {
   const syncXanax = async () => {
     if (!activeEvent) return;
     try {
-      const res = await fetch("/api/event/sync-xanax", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventId: activeEvent.id,
-          lastTimestamp: lastArmoryTimestamp.current,
-        }),
-      });
+      const res = await fetch("/api/event/sync-xanax");
       const data = await res.json();
       if (data.success) {
-        if (data.newLastTimestamp)
-          lastArmoryTimestamp.current = data.newLastTimestamp;
-        fetchHistory();
+        fetchHistory(); // لتحديث الجدول قدامك بالشاشة
       }
     } catch (error) {
       console.error("Xanax Sync Error:", error);

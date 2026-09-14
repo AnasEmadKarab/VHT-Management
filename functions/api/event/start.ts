@@ -22,9 +22,10 @@ export async function onRequestPost(context: any) {
       );
     }
 
+    const currentTimestamp = Math.floor(Date.now() / 1000);
     const newEvent = await db
       .insert(events)
-      .values({ name, type, status: "Active" })
+      .values({ name, type, status: "Active", lastTimestamp: currentTimestamp })
       .returning();
     const eventId = newEvent[0].id;
 
