@@ -1,18 +1,14 @@
-import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/d1";
-import { events, eventMembers } from "@/db/schema";
+import { events, eventMembers } from "../../../db/schema";
 import { eq, and } from "drizzle-orm";
-import { getRequestContext } from "@cloudflare/next-on-pages";
-
-export const runtime = "edge";
 
 const API_KEY = "ZdlDSn6CNQZos95a";
 const FACTION_ID = 50711;
 
-export async function POST(req: Request) {
+export async function onRequestPost(context: any) {
   try {
-    const { eventId } = await req.json();
-    const db = drizzle(getRequestContext().env.DB);
+    const { eventId } = await context.request.json();
+    const db = drizzle(context.env.DB);
 
     const eventData = await db
       .select()
@@ -30,16 +26,15 @@ export async function POST(req: Request) {
       );
       const data = await res.json();
       const attackers = data.chainreport?.attackers || [];
-
       totalRespect = data.chainreport?.details?.respect || 0;
 
       for (const attacker of attackers) {
-        const totalAttacks = attacker.attacks.total;
-        const respectEarned = attacker.respect.total;
-
         await db
           .update(eventMembers)
-          .set({ attacks: totalAttacks, respect: respectEarned })
+          .set({
+            attacks: attacker.attacks.total,
+            respect: attacker.respect.total,
+          })
           .where(
             and(
               eq(eventMembers.eventId, eventId),
@@ -59,16 +54,13 @@ export async function POST(req: Request) {
           `https://api.torn.com/v2/faction/${latestWarId}/rankedwarreport?key=${API_KEY}`,
         );
         const reportData = await reportRes.json();
-
         const ourFaction = reportData.rankedwarreport?.factions?.find(
           (f: any) => f.id === FACTION_ID,
         );
 
         if (ourFaction) {
           totalRespect = ourFaction.rewards?.respect || 0;
-          const itemsArray = ourFaction.rewards?.items || [];
-          totalItems = JSON.stringify(itemsArray);
-
+          totalItems = JSON.stringify(ourFaction.rewards?.items || []);
           if (ourFaction.members) {
             for (const member of ourFaction.members) {
               await db
@@ -95,10 +87,9 @@ export async function POST(req: Request) {
       })
       .where(eq(events.id, eventId));
 
-    return NextResponse.json({ success: true });
+    return Response.json({ success: true });
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: error.message },
       { status: 500 },
     );
