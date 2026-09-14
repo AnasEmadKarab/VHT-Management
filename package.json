@@ -10,16 +10,16 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
-    "next": "15.0.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
