@@ -30,8 +30,11 @@
 
 import { NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 export async function GET() {
   return NextResponse.json({
-    test: true,
+    success: true,
+    message: "السيرفر شغال والـ Runtime سليم!",
   });
 }
