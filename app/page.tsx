@@ -79,6 +79,20 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: eventName, type: eventType }),
       });
+
+      // هنا الحل السحري اللي بيمنع الانهيار:
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server Error:", errorText);
+        alert(
+          "السيرفر رفض الطلب: " +
+            (errorText.includes("Internal")
+              ? "مشكلة في اتصال الداتابيز"
+              : errorText),
+        );
+        return;
+      }
+
       const data = await res.json();
       if (data.success) {
         setEventName("");
@@ -88,6 +102,9 @@ export default function Home() {
       } else {
         alert("Failed to start event: " + data.error);
       }
+    } catch (error) {
+      console.error("Fetch failed:", error);
+      alert("تعذر الاتصال بالسيرفر نهائياً.");
     } finally {
       setIsLoading(false);
     }
