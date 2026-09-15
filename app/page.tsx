@@ -5,6 +5,7 @@ export default function Home() {
   const [eventName, setEventName] = useState("");
   const [eventType, setEventType] = useState("War");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [activeEvent, setActiveEvent] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
@@ -15,21 +16,19 @@ export default function Home() {
     eventName: "",
   });
 
-  const lastArmoryTimestamp = useRef<number>(Math.floor(Date.now() / 1000));
+  const hasInitialSyncRun = useRef(false);
 
   useEffect(() => {
     fetchActiveEvent();
     fetchHistory();
   }, []);
 
+  // المزامنة التلقائية عند فتح الصفحة (مرة واحدة فقط)
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (activeEvent) {
-      interval = setInterval(() => {
-        syncXanax();
-      }, 30000);
+    if (activeEvent && !hasInitialSyncRun.current) {
+      hasInitialSyncRun.current = true;
+      syncXanax();
     }
-    return () => clearInterval(interval);
   }, [activeEvent]);
 
   const fetchActiveEvent = async () => {
@@ -50,14 +49,17 @@ export default function Home() {
 
   const syncXanax = async () => {
     if (!activeEvent) return;
+    setIsSyncing(true);
     try {
       const res = await fetch("/api/event/sync-xanax");
       const data = await res.json();
       if (data.success) {
-        fetchHistory(); // لتحديث الجدول قدامك بالشاشة
+        fetchHistory();
       }
     } catch (error) {
       console.error("Xanax Sync Error:", error);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -71,7 +73,6 @@ export default function Home() {
         body: JSON.stringify({ name: eventName, type: eventType }),
       });
 
-      // هنا الحل السحري اللي بيمنع الانهيار:
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Server Error:", errorText);
@@ -87,7 +88,7 @@ export default function Home() {
       const data = await res.json();
       if (data.success) {
         setEventName("");
-        lastArmoryTimestamp.current = Math.floor(Date.now() / 1000);
+        hasInitialSyncRun.current = false; // إعادة الضبط ليقوم بالمزامنة للحدث الجديد
         fetchActiveEvent();
         fetchHistory();
       } else {
@@ -163,7 +164,6 @@ export default function Home() {
             <span className="w-2 h-6 bg-[#D4AF37] rounded-full inline-block"></span>
             Create New Event
           </h2>
-          {/* Modified: md:items-end instead of items-end for mobile wrapping */}
           <div className="flex flex-col md:flex-row gap-4 md:items-end">
             <div className="flex-1 w-full">
               <label className="block text-sm text-gray-400 mb-2">
@@ -202,9 +202,35 @@ export default function Home() {
       ) : (
         <section className="bg-gradient-to-br from-[#1C1C1C] to-[#0D0D0D] border border-emerald-500/30 rounded-xl p-4 md:p-6 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 text-center md:text-left">
-            <div>
-              <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+            {/* Left side: Force Update Button */}
+            <div className="flex items-center self-start md:self-center order-2 md:order-1">
+              <button
+                onClick={syncXanax}
+                disabled={isSyncing}
+                className="flex items-center gap-2 bg-[#2A2A2A] hover:bg-[#333333] border border-gray-700 text-gray-300 hover:text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                title="Force update data from Torn API"
+              >
+                <svg
+                  className={`w-4 h-4 ${isSyncing ? "animate-spin text-emerald-500" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                {isSyncing ? "Syncing..." : "Force Update"}
+              </button>
+            </div>
+
+            {/* Middle: Event Info */}
+            <div className="text-center order-1 md:order-2 flex-1">
+              <div className="flex items-center justify-center gap-3 mb-2">
                 <span className="animate-pulse w-3 h-3 bg-emerald-500 rounded-full"></span>
                 <span className="text-emerald-500 font-semibold tracking-wider text-sm uppercase">
                   Active {activeEvent.type}
@@ -217,13 +243,17 @@ export default function Home() {
                 Tracking Xanax usage and attacks in background...
               </p>
             </div>
-            <button
-              onClick={handleEndEvent}
-              disabled={isLoading}
-              className="w-full md:w-auto bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 text-white font-bold py-3 px-10 rounded-lg shadow-lg transition-all active:scale-95 disabled:opacity-50"
-            >
-              {isLoading ? "Ending & Fetching..." : "End Event"}
-            </button>
+
+            {/* Right side: End Event Button */}
+            <div className="order-3 w-full md:w-auto">
+              <button
+                onClick={handleEndEvent}
+                disabled={isLoading || isSyncing}
+                className="w-full md:w-auto bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 text-white font-bold py-3 px-10 rounded-lg shadow-lg transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isLoading ? "Ending..." : "End Event"}
+              </button>
+            </div>
           </div>
         </section>
       )}
